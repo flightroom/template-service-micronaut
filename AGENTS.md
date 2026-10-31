@@ -11,6 +11,7 @@ Java 25 LTS + Micronaut 5.2 (Netty HTTP server, Serde Jackson) backend service, 
 - `openapi.properties`: OpenAPI generation (output `openapi.json`, Swagger UI on, other viewers off).
 - `src/test/java/...`: `@MicronautTest` tests with the HTTP client.
 - `Dockerfile`: multi-stage, non-root user `10001`, healthcheck on `/health/liveness`.
+- `docker-entrypoint.sh`: attaches the Application Insights Java agent (`-javaagent` in `JAVA_TOOL_OPTIONS`) only when `APPLICATIONINSIGHTS_CONNECTION_STRING` is set, then runs the JVM.
 - `mvnw`, `.mvn/wrapper/`: Maven Wrapper. Always use `./mvnw`, never a system `mvn`.
 
 ## Endpoints the platform relies on

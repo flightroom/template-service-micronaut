@@ -38,6 +38,12 @@ Environment variables only:
 
 Any Micronaut property can also be set from the environment (e.g. `MICRONAUT_SERVER_PORT`). Keep `SHUTDOWN_TIMEOUT` below the Kubernetes `terminationGracePeriodSeconds` (30s by default).
 
+## Application Insights
+
+In Flightroom, attach an "Application Insights" resource to the backend. The platform then passes the container `APPLICATIONINSIGHTS_CONNECTION_STRING`, along with `OTEL_SERVICE_NAME` (the backend slug) and `OTEL_RESOURCE_ATTRIBUTES` (e.g. `deployment.environment=prod,service.version=1.4.2`).
+
+The image ships the [Application Insights Java agent](https://learn.microsoft.com/azure/azure-monitor/app/java-standalone-config) 3.7.10. `docker-entrypoint.sh` adds it to `JAVA_TOOL_OPTIONS` only when `APPLICATIONINSIGHTS_CONNECTION_STRING` is set: without it the JVM starts as before and nothing is sent. With it, requests, outgoing calls, logs and JVM metrics are collected with no code change; the cloud role name is `OTEL_SERVICE_NAME` (copied into `APPLICATIONINSIGHTS_ROLE_NAME` unless that is set) and the application version is `service.version` from `OTEL_RESOURCE_ATTRIBUTES`. The agent logs its own diagnostics to stdout (level: `APPLICATIONINSIGHTS_SELF_DIAGNOSTICS_LEVEL`); `APPLICATIONINSIGHTS_CONFIGURATION_CONTENT` replaces its JSON configuration. Outside the image (`./mvnw mn:run`, `java -jar`) the agent is not attached.
+
 ## Test and build
 
 ```bash
